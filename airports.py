@@ -1,6 +1,3 @@
-import random
-from geopy.distance import geodesic
-
 import mysql.connector
 datastorage = mysql.connector.connect(
     host='127.0.0.1',
@@ -11,13 +8,9 @@ datastorage = mysql.connector.connect(
     autocommit= True
 )
 
-#def pullout_data(location, location2):
 
 
-def ticket_price(xlat,xlot, ylat,ylot):
-    dis = geodesic(xlat,xlot,ylat,ylot).km
-    ticket_price = dis * 0.50
-    return ticket_price
+
 def check_name(country):
     chk = f"select iso_country from country where iso_country = '{country}'"
     cursor = datastorage.cursor()
@@ -27,7 +20,7 @@ def check_name(country):
         return False
     else:
         return True
-#def travel_plan(location, location2):
+
 
 
 while True:
@@ -40,8 +33,19 @@ while True:
         crosri = datastorage.cursor()
         crosri.execute(sql)
         values = crosri.fetchall()
+        places = []
+        codes = []
         for i  in range(len(values)):
-            print(values[i])
+            places.append(values[i][0])
+
+        for j in range(len(values)):
+            codes.append(values[j][1])
+
+        flights = dict(zip(codes, places))
+
+        for code, airport in flights.items():
+            print( code, airport )
+
         break
 
 
