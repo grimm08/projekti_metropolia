@@ -46,14 +46,31 @@ def airport_list(place):
 
 while True:
     first = input("where are you?  ").lower()
-    todis = input("where you want to go?  ").lower()
+    final = input("where you want to go?  ").lower()
 
-    if not check_name(first) and not check_name(todis):
-        codes = airport_list(todis)
-        for code, airport in codes.items():
-            print(f"{code}: {airport}")
+    if not check_name(first) and not check_name(final):
+        fcodes = airport_list(first)
+
+        if len(fcodes) > 1:#checking how meny large airports in the country
+
+            for code, airport in fcodes.items():
+                print(f"{code}: {airport}")
+            airport_choise = input("what airport are you in(entre airport code)?  ").upper()
+            print(f"your airport is {fcodes[airport_choise]}")
+        else:
+            print(f"your airport is {fcodes}")
+
+        codes = airport_list(final)
 
 
+        if len(codes) > 1:
+            for code, airport in codes.items():
+                print(f"{code}: {airport}")
+            airport_choise = input("what airport are you to go(entre airport code)?  ").upper()
+            print(f"you're going to {codes[airport_choise]}")
+        else:
+            print(f"you're going to {codes}")
         break
+
     else:
         print("Please enter a valid name")
