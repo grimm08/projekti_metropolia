@@ -1,3 +1,5 @@
+#this code  shows how many large airports in giving country
+
 import mysql.connector
 datastorage = mysql.connector.connect(
     host='127.0.0.1',
@@ -12,20 +14,21 @@ datastorage = mysql.connector.connect(
 
 
 def check_name(country):
-    chk = f"select iso_country from country where iso_country = '{country}'"
+    chk = f"select iso_country from country where name = '{country}'"
     cursor = datastorage.cursor()
     cursor.execute(chk)
     result = cursor.fetchall()
-    if not result:
-        return False
-    else:
+    if  result:
         return True
+    else:
+        print("the is False")
+        return False
 
 
 
 while True:
-    my_place = input("Enter your place: ")
-    if check_name(my_place):
+    my_place = input("Enter country: ")
+    if not check_name(my_place):
         print("Please enter a valid place")
 
     else:

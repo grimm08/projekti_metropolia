@@ -1,3 +1,7 @@
+#part of the game where asking about player location and the player distinction
+#also the ticket prices
+#the code not ready, it works as it is.
+
 from geopy.distance import geodesic
 import mysql.connector
 
@@ -12,17 +16,17 @@ datastorage = mysql.connector.connect(
     autocommit= True
 )
 
-def check_name(country):
-    chk = f"select iso_country from country where iso_country = '{country}'"
+def check_name(country):            #checking the input (country name) is correct
+    chk = f"select iso_country from country where name = '{country}'"
     cursor = datastorage.cursor()
     cursor.execute(chk)
     result = cursor.fetchall()
-    if not result:
-        return False
-    else:
+    if result:
         return True
+    else:
+        return False
 
-def ticket_price(xlat,xlot, ylat,ylot):
+def ticket_price(xlat,xlot, ylat,ylot):     #price checking the function not connected yet. (update 27.9.2026)
     dis = geodesic(xlat,xlot,ylat,ylot).km
     ticket_price = dis * 0.50
     return ticket_price
@@ -48,28 +52,28 @@ while True:
     first = input("where are you?  ").lower()
     final = input("where you want to go?  ").lower()
 
-    if not check_name(first) and not check_name(final):
+    if check_name(first) and  check_name(final):
         fcodes = airport_list(first)
 
-        if len(fcodes) > 1:#checking how meny large airports in the country
+        if len(fcodes) > 1: # creates dictionary of airport name and airport code, this for player location
 
             for code, airport in fcodes.items():
                 print(f"{code}: {airport}")
             airport_choise = input("what airport are you in(entre airport code)?  ").upper()
             print(f"your airport is {fcodes[airport_choise]}")
         else:
-            print(f"your airport is {fcodes}")
+            print(f"\nyour airport is {fcodes}\n")
 
         codes = airport_list(final)
 
 
-        if len(codes) > 1:
+        if len(codes) > 1: #dictionary for distinction country
             for code, airport in codes.items():
                 print(f"{code}: {airport}")
-            airport_choise = input("what airport are you to go(entre airport code)?  ").upper()
-            print(f"you're going to {codes[airport_choise]}")
+            airport_choise = input("\nwhat airport are you to go(entre airport code)?  ").upper()
+            print(f"\nyou're going to {codes[airport_choise]}")
         else:
-            print(f"you're going to {codes}")
+            print(f"\nyou're going to {codes}")
         break
 
     else:
