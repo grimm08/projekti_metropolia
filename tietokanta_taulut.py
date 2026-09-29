@@ -172,7 +172,7 @@ while True:
 
 
 
-# SULJETAAN YHTEYS
+# SULJETAAN YHTEYS..
 
 
 cursor.close()
