@@ -48,6 +48,14 @@ def airport_list(place):
     flights = dict(zip(codes, places))
     return flights
 
+def airport_locations(airport_code): #pulling out locations
+    gps_airport = f"select latitude_deg, longitude_deg from airport where ident = %s"
+    crosri = datastorage.cursor()
+    crosri.execute(gps_airport, (airport_code,))
+    values = crosri.fetchall()
+    return values
+
+
 while True:
     first = input("where are you?  ").lower()
     final = input("where you want to go?  ").lower()
@@ -59,10 +67,11 @@ while True:
 
             for code, airport in fcodes.items():
                 print(f"{code}: {airport}")
-            airport_choise = input("what airport are you in(entre airport code)?  ").upper()
-            print(f"your airport is {fcodes[airport_choise]}")
+            airport_choise1 = input("what airport are you in(entre airport code)?  ").upper()
+            print(f"your airport is {fcodes[airport_choise1]}")
         else:
-            print(f"\nyour airport is {fcodes}\n")
+            airport_choise1, airport_name = next(iter(fcodes.items()))
+            print(f"\nyour airport is {airport_name}")
 
         codes = airport_list(final)
 
@@ -70,11 +79,14 @@ while True:
         if len(codes) > 1: #dictionary for distinction country
             for code, airport in codes.items():
                 print(f"{code}: {airport}")
-            airport_choise = input("\nwhat airport are you to go(entre airport code)?  ").upper()
-            print(f"\nyou're going to {codes[airport_choise]}")
+            airport_choise2 = input("\nwhat airport are you to go(entre airport code)?  ").upper()
+            print(f"\nyou're going to {codes[airport_choise2]}")
         else:
-            print(f"\nyou're going to {codes}")
+            airport_choise2, airport_name = next(iter(codes.items()))
+            print(f"\nyou're going to {airport_name}")
         break
 
     else:
         print("Please enter a valid name")
+print(airport_locations(airport_choise1))
+print(airport_locations(airport_choise2))
