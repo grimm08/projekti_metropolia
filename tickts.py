@@ -105,4 +105,4 @@ loc2 = airport_locations(airport_choise2)
 print(f"{ticket_price(loc1,loc2):.2f}€")
 
 next_location = rand_choice(airport_choise2)
-print(f"next distnation: {next_location}")
+print(f"next destination: {next_location}")
