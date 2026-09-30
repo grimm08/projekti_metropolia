@@ -21,6 +21,7 @@ def check_name(country):            #checking the input (country name) is correc
     cursor = datastorage.cursor()
     cursor.execute(chk)
     result = cursor.fetchall()
+    cursor.close()
     if result:
         return True
     else:
@@ -30,6 +31,15 @@ def ticket_price(x,y):     #price checking the function not connected yet. (upda
     dis = geodesic(x,y).km
     price = dis * 0.18
     return price
+
+def rand_choice(starts): #random choise to next country.
+    next_location = (f"select country.name from country join airport on  country.iso_country = airport.iso_country "
+                     f"where airport.ident != %s order by rand() limit 1;")
+    crosri = datastorage.cursor()
+    crosri.execute(next_location, (starts,))
+    values = crosri.fetchone()
+    crosri.close()
+    return values[0]
 
 def airport_list(place):
     sql = (f"select airport.name, ident from airport join country on airport.iso_country = country.iso_country where "
@@ -53,6 +63,7 @@ def airport_locations(airport_code): #pulling out locations
     crosri = datastorage.cursor()
     crosri.execute(gps_airport, (airport_code,))
     values = crosri.fetchall()
+    crosri.close()
     return values
 
 
@@ -71,7 +82,7 @@ while True:
             print(f"your airport is {fcodes[airport_choise1]}")
         else:
             airport_choise1, airport_name = next(iter(fcodes.items()))
-            print(f"\nyour airport is {airport_name}")
+            print(f"your airport is {airport_name}")
 
         codes = airport_list(final)
 
@@ -80,10 +91,10 @@ while True:
             for code, airport in codes.items():
                 print(f"{code}: {airport}")
             airport_choise2 = input("\nwhat airport are you to go(entre airport code)?  ").upper()
-            print(f"\nyou're going to {codes[airport_choise2]}")
+            print(f"you're going to {codes[airport_choise2]}")
         else:
             airport_choise2, airport_name = next(iter(codes.items()))
-            print(f"\nyou're going to {airport_name}")
+            print(f"you're going to {airport_name}")
         break
 
     else:
@@ -91,7 +102,7 @@ while True:
 loc1 = airport_locations(airport_choise1)
 loc2 = airport_locations(airport_choise2)
 
-print(airport_locations(airport_choise1))
-print(airport_locations(airport_choise2))
-
 print(f"{ticket_price(loc1,loc2):.2f}€")
+
+next_location = rand_choice(airport_choise2)
+print(f"next distnation: {next_location}")
