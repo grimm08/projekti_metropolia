@@ -26,10 +26,10 @@ def check_name(country):            #checking the input (country name) is correc
     else:
         return False
 
-def ticket_price(xlat,xlot, ylat,ylot):     #price checking the function not connected yet. (update 27.9.2026)
-    dis = geodesic(xlat,xlot,ylat,ylot).km
-    ticket_price = dis * 0.50
-    return ticket_price
+def ticket_price(x,y):     #price checking the function not connected yet. (update 27.9.2026)
+    dis = geodesic(x,y).km
+    price = dis * 0.18
+    return price
 
 def airport_list(place):
     sql = (f"select airport.name, ident from airport join country on airport.iso_country = country.iso_country where "
@@ -88,5 +88,10 @@ while True:
 
     else:
         print("Please enter a valid name")
+loc1 = airport_locations(airport_choise1)
+loc2 = airport_locations(airport_choise2)
+
 print(airport_locations(airport_choise1))
 print(airport_locations(airport_choise2))
+
+print(f"{ticket_price(loc1,loc2):.2f}€")
