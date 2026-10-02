@@ -18,6 +18,8 @@ cursor = connection.cursor()
 # ==========================================
 # PELAAJATAULU
 # ==========================================
+# Luodaan players-taulu, jos sitä ei vielä ole. #
+# players-taulu tallentaa pelaajan perustiedot:
 
 cursor.execute("""
 CREATE TABLE IF NOT EXISTS players (
@@ -33,8 +35,26 @@ CREATE TABLE IF NOT EXISTS players (
 connection.commit()
 
 
+# Tähän tauluun voidaan myöhemmin tallentaa
+# pelaajan tekemät lennot.
 
-# REKISTERÖINTI
+
+cursor.execute("""
+CREATE TABLE IF NOT EXISTS flight_history (
+    id INT AUTO_INCREMENT PRIMARY KEY,
+    player_id INT NOT NULL,
+    departure_airport VARCHAR(10) NOT NULL,
+    arrival_airport VARCHAR(10) NOT NULL,
+    flight_date DATETIME DEFAULT CURRENT_TIMESTAMP,
+    FOREIGN KEY (player_id) REFERENCES players(id)
+)
+""")
+
+connection.commit()
+
+
+
+#######REKISTERÖINTI
 
 
 def register():
@@ -44,7 +64,7 @@ def register():
     username = input("Anna käyttäjänimi: ")
     password = input("Anna salasana: ")
 
-    # Tarkistetaan löytyykö käyttäjä jo
+    #### Tarkistetaan löytyykö käyttäjä jo
     cursor.execute(
         "SELECT id FROM players WHERE username = %s",
         (username,)
@@ -56,7 +76,8 @@ def register():
         print("Käyttäjänimi on jo käytössä.")
         return None
 
-    # Uusi pelaaja
+    ######## Uusi pelaaja #########
+
     cursor.execute("""
         INSERT INTO players
         (username, password, money, points, current_airport)
@@ -125,7 +146,7 @@ def show_player(player_id):
     print("Nimi:", player[0])
     print("Rahaa:", player[1], "€")
     print("Pisteet:", player[2])
-    print("Nykyinen lentokenttä:", player[3])
+    print("Nykyinen lentokenttä:", player[3],"Helsinki")
     print("==========================")
 
 
@@ -138,7 +159,7 @@ print("       FLIGHT GAME")
 print("==========================")
 
 while True:
-
+    print("==>Valitse mistä aloittaa<==")
     print("\n1. Register")
     print("2. Login")
     print("3. Lopeta")
