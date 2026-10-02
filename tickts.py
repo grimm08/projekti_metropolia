@@ -29,7 +29,7 @@ def check_name(country):            #checking the input (country name) is correc
 
 def ticket_price(x,y):     #price checking the function not connected yet. (update 27.9.2026)
     dis = geodesic(x,y).km
-    price = dis * 0.18
+    price = dis * 0.10
     return price
 
 def rand_choice(starts): #random choise to next country.
@@ -42,11 +42,16 @@ def rand_choice(starts): #random choise to next country.
     return values[0]
 
 def airport_list(place):
-    sql = (f"select airport.name, ident from airport join country on airport.iso_country = country.iso_country where "
+    sql_large = (f"select airport.name, ident from airport join country on airport.iso_country = country.iso_country where "
            f"airport.type = 'large_airport' and country.name = '{place}' order by airport.iso_country;")
     crosri = datastorage.cursor()
-    crosri.execute(sql)
+    crosri.execute(sql_large)
     values = crosri.fetchall()
+    if not values:
+        sql_small = (f"select airport.name, ident from airport join country on airport.iso_country = country.iso_country "
+                     f"where airport.type = 'small_airport' and country.name = '{place}' order by airport.iso_country;")
+        crosri.execute(sql_small)
+        values = crosri.fetchall()
     places = []
     codes = []
     for i  in range(len(values)):
