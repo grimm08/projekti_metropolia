@@ -19,12 +19,8 @@ yhteys = mysql.connector.connect(
 )
 
 # Load the airport table once. The query deliberately has no coordinate filter.
-sql = "SELECT ident, name, latitude_deg, longitude_deg FROM airport WHERE type = 'large_airport'"
 kursori = yhteys.cursor()
-kursori.execute(sql)
 tulos = kursori.fetchall()
-kursori.close()
-
 
 # Keep only rows with both coordinates. Each airport is a tuple:
 # (ident, name, latitude, longitude)
