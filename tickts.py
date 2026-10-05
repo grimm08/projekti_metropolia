@@ -71,43 +71,53 @@ def airport_locations(airport_code): #pulling out locations
     crosri.close()
     return values
 
+first = None
+print("Welcome to the flight game!")
+print("1. Start the game")
+print("0. Exit")
+choice = input("Enter your choice: ")
+while choice != "0":
+        while True:
+            first = input("where are you?  ").lower()
+            final = input("where you want to go?  ").lower()
 
-while True:
-    first = input("where are you?  ").lower()
-    final = input("where you want to go?  ").lower()
+            if check_name(first) and  check_name(final):
+                fcodes = airport_list(first)
 
-    if check_name(first) and  check_name(final):
-        fcodes = airport_list(first)
+                if len(fcodes) > 1: # creates dictionary of airport name and airport code, this for player location
 
-        if len(fcodes) > 1: # creates dictionary of airport name and airport code, this for player location
+                    for code, airport in fcodes.items():
+                        print(f"{code}: {airport}")
+                    airport_choise1 = input("what airport are you in(entre airport code)?  ").upper()
+                    print(f"your airport is {fcodes[airport_choise1]}")
+                else:
+                    airport_choise1, airport_name = next(iter(fcodes.items()))
+                    print(f"your airport is {airport_name}")
 
-            for code, airport in fcodes.items():
-                print(f"{code}: {airport}")
-            airport_choise1 = input("what airport are you in(entre airport code)?  ").upper()
-            print(f"your airport is {fcodes[airport_choise1]}")
-        else:
-            airport_choise1, airport_name = next(iter(fcodes.items()))
-            print(f"your airport is {airport_name}")
-
-        codes = airport_list(final)
+                codes = airport_list(final)
 
 
-        if len(codes) > 1: #dictionary for distinction country
-            for code, airport in codes.items():
-                print(f"{code}: {airport}")
-            airport_choise2 = input("\nwhat airport are you to go(entre airport code)?  ").upper()
-            print(f"you're going to {codes[airport_choise2]}")
-        else:
-            airport_choise2, airport_name = next(iter(codes.items()))
-            print(f"you're going to {airport_name}")
-        break
+                if len(codes) > 1: #dictionary for distinction country
+                    for code, airport in codes.items():
+                        print(f"{code}: {airport}")
+                    airport_choise2 = input("\nwhat airport are you to go(entre airport code)?  ").upper()
+                    print(f"you're going to {codes[airport_choise2]}")
+                else:
+                    airport_choise2, airport_name = next(iter(codes.items()))
+                    print(f"you're going to {airport_name}")
+                break
 
-    else:
-        print("Please enter a valid name")
-loc1 = airport_locations(airport_choise1)
-loc2 = airport_locations(airport_choise2)
+            else:
+                print("Please enter a valid name")
+        loc1 = airport_locations(airport_choise1)
+        loc2 = airport_locations(airport_choise2)
 
-print(f"{ticket_price(loc1,loc2):.2f}€")
+        print(f"{ticket_price(loc1,loc2):.2f}€")
 
-next_location = rand_choice(airport_choise2)
-print(f"next destination: {next_location}")
+        next_location = rand_choice(airport_choise2)
+        print(f"next destination: {next_location}")
+        print("continue to play or exit the game (y/n)")
+        continue_choice = input().lower()
+        if continue_choice == "n":
+            break
+print("Exiting the game. Goodbye!")
