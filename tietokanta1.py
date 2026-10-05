@@ -138,6 +138,13 @@ def show_player(player_id):
     print("==========================")
 
 
+def gamer_location(player_id):
+    cursor.execute("""
+        SELECT current_airport FROM players WHERE id = %s
+    """, (player_id,))
+
+    location = cursor.fetchone()
+    return location[0] if location else None
 
 # PÄÄOHJELMA
 
