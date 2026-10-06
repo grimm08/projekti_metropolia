@@ -15,6 +15,8 @@ connection = mysql.connector.connect(
 
 cursor = connection.cursor()
 
+START_MONEY = 15000.00  # one place for the starting money (used by register and by the game reset)
+
 
 # ==========================================
 # PELAAJATAULU
@@ -25,7 +27,7 @@ CREATE TABLE IF NOT EXISTS players (
     id INT AUTO_INCREMENT PRIMARY KEY,
     username VARCHAR(50) UNIQUE NOT NULL,
     password VARCHAR(255) NOT NULL,
-    money DECIMAL(10,2) DEFAULT 1500.00,
+    money DECIMAL(10,2) DEFAULT 15000.00,
     points INT DEFAULT 0,
     current_airport VARCHAR(10) DEFAULT 'EFHK',
     country VARCHAR(50) DEFAULT 'Finland',
@@ -69,7 +71,7 @@ def register():
     """, (
         username,
         password,
-        1500.00,
+        START_MONEY,  
         0,
         "EFHK",
         "Finland",
@@ -79,7 +81,7 @@ def register():
     connection.commit()
 
     print("\nRekisteröinti onnistui!")
-    print("Saat 1500 € aloitusrahaa.")
+    print("Saat 15000 € aloitusrahaa.")
 
     return cursor.lastrowid
 
@@ -136,8 +138,8 @@ def show_player(player_id):
     print("Maa:", player[4])
     print("ISO-koodi:", player[5])
     print("==========================")
-
-
+    
+    
 def gamer_location(player_id):
     cursor.execute("""
         SELECT current_airport FROM players WHERE id = %s
@@ -146,51 +148,61 @@ def gamer_location(player_id):
     location = cursor.fetchone()
     return location[0] if location else None
 
+def ensure_scores_table():  #score table
+    cur = connection.cursor()
+    cur.execute("""
+        CREATE TABLE IF NOT EXISTS scores (
+            id INT AUTO_INCREMENT PRIMARY KEY,
+            player_id INT NOT NULL,
+            target_country VARCHAR(50) NOT NULL,
+            stops INT NOT NULL,
+            money_spent DECIMAL(10,2) NOT NULL,
+            money_left DECIMAL(10,2) NOT NULL,
+            score INT NOT NULL,
+            completed BOOLEAN NOT NULL,
+            played_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+            FOREIGN KEY (player_id) REFERENCES players(id)
+        );
+    """)
+    connection.commit()
+    cur.close()
+    
 # PÄÄOHJELMA
 
 
-print("==========================")
-print("       FLIGHT GAME")
-print("==========================")
+if __name__ == "__main__":
+    print("==========================")
+    print("       FLIGHT GAME")
+    print("==========================")
 
-while True:
+    while True:
+        print("\n1. Register")
+        print("2. Login")
+        print("3. Lopeta")
 
-    print("\n1. Register")
-    print("2. Login")
-    print("3. Lopeta")
+        choice = input("Valitse: ")
 
-    choice = input("Valitse: ")
+        if choice == "1":
+            player_id = register()
 
-    if choice == "1":
+            if player_id is not None:
+                show_player(player_id)
+                break
 
-        player_id = register()
+        elif choice == "2":
+            player = login()
 
-        if player_id is not None:
-            show_player(player_id)
+            if player is not None:
+                player_id = player[0]
+                show_player(player_id)
+                break
+
+        elif choice == "3":
+            print("Peli lopetetaan.")
             break
-        
-    elif choice == "2":
 
-        player = login()
+        else:
+            print("Virheellinen valinta.")
 
-        if player is not None:
-            player_id = player[0]
-            show_player(player_id)
-            
-            break
-
-    elif choice == "3":
-
-        print("Peli lopetetaan.")
-        break
-
-    else:
-        print("Virheellinen valinta.")
-
-
-
-# SULJETAAN YHTEYS..
-
-
-cursor.close()
-connection.close()
+    cursor.close()
+    connection.close()
