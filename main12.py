@@ -4,9 +4,9 @@ from geopy.distance import geodesic
 
 
 PRICE_PER_KM = 0.10  #ticket price constant (km * 0.10)
-POINTS_FOR_GOAL = 100  # base points when you reach the target country
+POINTS_FOR_GOAL = 100  #base points when you reach the target country
 POINTS_PER_STOP = 5  #5 points every stop
-
+MIN_MONEY = 50 #minimum money for game over
 
 
 
@@ -25,7 +25,7 @@ def record_score(player_id, target, stops, spent, money_left, score, completed):
     cur.close()
 
 
-def completed_rounds(player_id):  # CHANGED: counts only rounds won since the last reset, so a new game starts easy again
+def completed_rounds(player_id):  #counts only rounds won since the last reset, so a new game starts easy again
     cur = connection.cursor()
     cur.execute("select count(*) from scores where player_id = %s and completed = 1 "
                 "and id > (select coalesce(max(id), 0) from scores where player_id = %s and target_country = 'RESET')",
@@ -68,6 +68,20 @@ def cheapest_ticket(ident):  #price of the closest airport in ANOTHER country (t
     cur.close()
     return float(km) * PRICE_PER_KM if km is not None else 0.0
 
+class OutOfMoney(Exception):
+    pass
+
+def cheapest_to_country(from_ident, country):  # NEW: price of the cheapest flight from the current airport to the target country
+    sql = ("select min(6371 * acos(least(1, greatest(-1, "
+           "cos(radians(a.latitude_deg)) * cos(radians(b.latitude_deg)) * cos(radians(b.longitude_deg) - radians(a.longitude_deg)) "
+           "+ sin(radians(a.latitude_deg)) * sin(radians(b.latitude_deg)))))) "
+           "from airport a, airport b join country c on b.iso_country = c.iso_country "
+           "where a.ident = %s and c.name = %s and b.type in ('large_airport', 'small_airport')")
+    cur = connection.cursor()
+    cur.execute(sql, (from_ident, country))
+    km = cur.fetchone()[0]
+    cur.close()
+    return float(km) * PRICE_PER_KM if km is not None else 0.0
 
 def game_over(player_id):  #True when money has run out or is not enough for any flight to another country
     money = get_money(player_id)
@@ -187,7 +201,7 @@ def fly(player_id, from_ident, to_ident):  #charge the ticket and move the playe
     print(f"Distance {km:.0f} km, ticket price {price:.2f} EUR (you have {money:.2f} EUR)")
     if price > money:
         print("Not enough money for this flight.")
-        return False
+        raise OutOfMoney
     name, iso = country_from_code(to_ident)
     cur = connection.cursor()
     cur.execute("update players set money = money - %s, current_airport = %s, country = %s, iso_country = %s "
@@ -217,7 +231,7 @@ def finish_round(player_id, target, stops, money_start, reached):  #score the ro
     return reached
 
 
-def play_round(player_id):  #stops grow with progress, and every round is scored and recorded
+def play_round(player_id):
     starts = gamer_location(player_id)
     print(f"Your current location is: {starts}")
 
@@ -227,24 +241,35 @@ def play_round(player_id):  #stops grow with progress, and every round is scored
         return
     print(f"Next country to fly to: {next_country}")
 
-    stops = 1 + completed_rounds(player_id) 
-    money_start = get_money(player_id)  
+    if get_money(player_id) < cheapest_to_country(starts, next_country):
+        print(f"You don't have enough money to fly to {next_country}.")
+        return "GAME_OVER"
+
+    stops = 1 + completed_rounds(player_id)
+    money_start = get_money(player_id)
     print(f"Make {stops} stop(s) before reaching {next_country}")
 
-    for n in range(1, stops + 1):
-        while True:
-            trip = input(f"Stop {n}/{stops} - which country? ").strip()
-            if check_name(trip):
-                break
-            print("Invalid name, please try again")
-        ident = choose_airport(trip)
-        if ident is None or not fly(player_id, gamer_location(player_id), ident):
-            return finish_round(player_id, next_country, stops, money_start, False)  
+    try:  # catches OutOfMoney raised by fly()
+        for n in range(1, stops + 1):
+            while True:
+                trip = input(f"Stop {n}/{stops} - which country? ").strip()
+                if check_name(trip):
+                    break
+                print("Invalid name, please try again")
+            ident = choose_airport(trip)
+            if ident is None:
+                return finish_round(player_id, next_country, stops, money_start, False)
+            fly(player_id, gamer_location(player_id), ident)
 
-    print(f"Final leg: fly to {next_country}")
-    ident = choose_airport(next_country)
-    reached = bool(ident) and fly(player_id, gamer_location(player_id), ident)
-    return finish_round(player_id, next_country, stops, money_start, reached) 
+        print(f"Final leg: fly to {next_country}")
+        ident = choose_airport(next_country)
+        if ident is None:
+            return finish_round(player_id, next_country, stops, money_start, False)
+        fly(player_id, gamer_location(player_id), ident)
+    except OutOfMoney:
+        finish_round(player_id, next_country, stops, money_start, False)
+        return "GAME_OVER"
+    return finish_round(player_id, next_country, stops, money_start, True)
 
 
 # ==================== main program ====================
@@ -285,8 +310,10 @@ elif choice == "0":
 if gamer:
     ensure_scores_table()
     print("Welcome to the Flight Game!")
+    forced_over = False
+
     while True:
-        if game_over(gamer[0]):  #the game ends when money is gone or not enough to travel
+        if forced_over or game_over(gamer[0]):  #the game ends when money is gone or not enough to travel
             print("\n*** GAME OVER *** You don't have enough money to travel anywhere.")  
             print(f"Score of this game: {game_score(gamer[0])}")  
             show_player(gamer[0])
@@ -301,12 +328,14 @@ if gamer:
         print("0. exit")  
         choice = input("Enter your choice: ")
         if choice == "1":
+            forced_over = play_round(gamer[0]) == "GAME OVER"
             play_round(gamer[0])
             show_player(gamer[0])
         elif choice == "2":
             show_scores(gamer[0])
         elif choice == "3":
             reset_player(gamer[0])
+            print(f"\nnew game started with {START_MONEY:.0f} EUR in Helsinki (EFHK).")
             show_player(gamer[0])
         elif choice == "0":
             break

@@ -15,7 +15,7 @@ connection = mysql.connector.connect(
 
 cursor = connection.cursor()
 
-START_MONEY = 15000.00  # one place for the starting money (used by register and by the game reset)
+START_MONEY = 2000.00  # one place for the starting money (used by register and by the game reset)
 
 
 # ==========================================
@@ -27,7 +27,7 @@ CREATE TABLE IF NOT EXISTS players (
     id INT AUTO_INCREMENT PRIMARY KEY,
     username VARCHAR(50) UNIQUE NOT NULL,
     password VARCHAR(255) NOT NULL,
-    money DECIMAL(10,2) DEFAULT 15000.00,
+    money DECIMAL(10,2) DEFAULT 2000.00,
     points INT DEFAULT 0,
     current_airport VARCHAR(10) DEFAULT 'EFHK',
     country VARCHAR(50) DEFAULT 'Finland',
@@ -81,7 +81,7 @@ def register():
     connection.commit()
 
     print("\nRekisteröinti onnistui!")
-    print("Saat 15000 € aloitusrahaa.")
+    print("Saat 2000 € aloitusrahaa.")
 
     return cursor.lastrowid
 
