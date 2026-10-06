@@ -10,9 +10,6 @@ yhteys = mysql.connector.connect(
     collation='utf8mb4_general_ci'
     )
 
-rahat = 100
-taso = 0
-
 def kysy_maata():
     maa = input('Where?: ')
     if len(maa) < 1:
@@ -28,6 +25,18 @@ def rand_maa():
     return value
     pass
 
+def levelup():
+    global arvauskerrat
+    global taso
+    if arvauskerrat == kertoja_oikein * (taso + 1):
+        taso += 1
+        arvauskerrat = 0
+
+rahat = 100
+taso = 0
+arvauskerrat = 0
+kertoja_oikein = 4
+
 arvattava_maa = rand_maa()
 print(arvattava_maa)
 
@@ -35,10 +44,14 @@ maa = kysy_maata()
 while rahat > 0:
     if maa.lower() == arvattava_maa.lower():
         rahat += 10
+        arvauskerrat += 1
         arvattava_maa = rand_maa()
         print(arvattava_maa)
         print(":D")
     else:
         print("D:")
         rahat -= 30
+    levelup()
     maa = kysy_maata()
+
+print(taso)
