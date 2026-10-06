@@ -10,30 +10,39 @@ yhteys = mysql.connector.connect(
     collation='utf8mb4_general_ci'
     )
 
-rahat = 1000
+rahat = 100
 taso = 0
 
-
-koodi = input("Anna ICAO-koodi: ")
-kursori = yhteys.cursor()
-#kursori.execute(f"select name, municipality from airport where ident = '{koodi}'")
-
-tulos = kursori.fetchall()[0]
-print(f"\nKenttä: {tulos[0]}\nPaikkakunta: {tulos[1]}")
 
 def kysy_maata():
     maa = input('Where?: ')
     if len(maa) < 1:
         print("No country given. Try again...")
         maa = kysy_maata()
+    #kursori.execute(f"select distinct name from country order by rand()")
+    #print(kursori.fetchone()[0])
     return maa
 
+def rand_maa():
+    kursori = yhteys.cursor(buffered=True)
+    kursori.execute(f"select distinct name from country order by rand()")
+    value = kursori.fetchone()[0]
+    kursori.close()
+    return value
+    pass
 
+arvattava_maa = rand_maa()
+print(arvattava_maa)
 
 maa = kysy_maata()
 while rahat > 0:
-    if float(luku) < pienin:
-        pienin = float(luku)
-    elif float(luku) > suurin:
-        suurin = float(luku)
-    luku = input('Anna luku: ')
+    if maa.lower() == arvattava_maa.lower():
+        rahat += 10
+        #kursori.close()
+        arvattava_maa = rand_maa()
+        print(arvattava_maa)
+        print(":D")
+    else:
+        print("D:")
+        rahat -= 20
+    maa = kysy_maata()
