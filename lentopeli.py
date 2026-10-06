@@ -11,11 +11,11 @@ yhteys = mysql.connector.connect(
     collation='utf8mb4_general_ci'
     )
 
-def kysy_maata():
+def ask_where():
     maa = input('Where?: ')
     if len(maa) < 1:
         print("No country given. Try again...")
-        maa = kysy_maata()
+        maa = ask_where()
     return maa
 
 def rand_maa():
@@ -24,6 +24,27 @@ def rand_maa():
     value = kursori.fetchone()[0]
     kursori.close()
     return value
+
+def satunnainen_tapahtuma():
+    print("You have encountered something...")
+    valinta = input("Do you take the chance? Y/N: ")
+    if valinta.lower() == "y" or valinta.lower() == "yes":
+        chance = randrange(3)
+        global rahat
+        if chance == 0:
+            print("You have been robbed. You lost all your money")
+            rahat = 0
+            return
+        if chance == 1:
+            rand_raha = randrange(20) + 10
+            print("You did a good deed. You're rewarded for it.")
+            print(f"You receive {rand_raha}€")
+            rahat += rand_raha
+            return
+        if chance == 2:
+            print("Nothing happened. You continue your journey.")
+            return
+    print("You continue your journey.")
 
 def maan_sijainti(haettava_maa):
     kursori = yhteys.cursor(buffered=True)
@@ -48,6 +69,9 @@ def maan_sekoitus(haettava_maa):
     return peitetty_maa
 
 def levelup():
+    global arvauskerrat
+    global kertoja_oikein
+    global taso
     if arvauskerrat == kertoja_oikein + (taso * 3):
         taso += 1
         arvauskerrat = 0
@@ -58,27 +82,26 @@ maksu = 10
 arvauskerrat = 0
 kertoja_oikein = 4
 
-arvattava_maa = rand_maa()
-print(arvattava_maa)
-print(maan_sekoitus(arvattava_maa))
-print(maan_sekoitus(arvattava_maa))
-print(maan_sekoitus(arvattava_maa))
+arvattava_paikka = rand_maa()
+print(arvattava_paikka)
+print(maan_sekoitus(arvattava_paikka))
+print(maan_sekoitus(arvattava_paikka))
+print(maan_sekoitus(arvattava_paikka))
 
-
-
-maa = kysy_maata()
+maa = ask_where()
 while rahat > 0:
-    if maa.lower() == arvattava_maa.lower():
+    if maa.lower() == arvattava_paikka.lower():
         rahat = min(rahat + 10, 500)
         arvauskerrat += 1
-        arvattava_maa = rand_maa()
-        print(maan_sijainti(arvattava_maa))
-        print(arvattava_maa)
+        arvattava_paikka = rand_maa()
+        print(arvattava_paikka)
         print(":D")
     else:
         print("D:")
         rahat -= 30
     levelup()
-    maa = kysy_maata()
+    maa = ask_where()
+    if randrange(100) + 1 >= 50:
+        satunnainen_tapahtuma()
 print()
 print(taso)
