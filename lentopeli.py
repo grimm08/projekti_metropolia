@@ -19,14 +19,14 @@ def kysy_maata():
 
 def rand_maa():
     kursori = yhteys.cursor(buffered=True)
-    kursori.execute("select distinct name from country order by rand() limit 1")
+    kursori.execute("select distinct name from country where name is not null order by rand() limit 1")
     value = kursori.fetchone()[0]
     kursori.close()
     return value
-    pass
 
 def levelup():
     global arvauskerrat
+    #global kertoja_oikein
     global taso
     if arvauskerrat == kertoja_oikein * (taso + 1):
         taso += 1
