@@ -305,6 +305,7 @@ if gamer:
             show_scores(gamer[0])
         elif choice == "3":
             reset_player(gamer[0])
+            show_player(gamer[0])
         elif choice == "0":
             break
         else:
