@@ -84,16 +84,6 @@ def satunnainen_tapahtuma():
             return
     print("You continue your journey.")
 
-def maan_sijainti(haettava_maa):
-    kursori = yhteys.cursor(buffered=True)
-    kursori.execute(f"select latitude_deg, longitude_deg from airport "
-                    f"inner join country on country.iso_country = airport.iso_country "
-                    f"where country.name = '{haettava_maa}' "
-                    f"order by rand() limit 1")
-    value = kursori.fetchone()
-    kursori.close()
-    return value
-
 def maan_sekoitus(haettava_maa):
     peitetty_maa = ""
     for i in range(len(haettava_maa)):
@@ -135,11 +125,14 @@ while rahat > 0:
         menetettava_raha = 30
         vaara_vastaus(arvattava_paikka, menetettava_raha)
         rahat -= menetettava_raha
+        arvattava_paikka = rand_maa()
     levelup()
-    if randrange(100) + 1 >= 50:
+    print()
+    if randrange(100) + 1 >= 80:
         satunnainen_tapahtuma()
     info_teksti(maan_sekoitus(arvattava_paikka))
     maa = kysy_maata()
 
 print()
-print(taso)
+print("You have run out of money to travel")
+print(f"Your level: {taso}")
