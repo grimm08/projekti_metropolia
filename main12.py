@@ -84,7 +84,7 @@ def game_score(player_id):  # total score of the game that just ended (rounds si
     return int(total)
 
 
-def reset_player(player_id):  # NEW: new game - money and location back to the start, total points and history are kept
+def reset_player(player_id):  # Reset player data to default
     cur = connection.cursor()
     cur.execute("update players set money = %s, current_airport = 'EFHK', country = 'Finland', iso_country = 'FI' "
                 "where id = %s", (START_MONEY, player_id))
