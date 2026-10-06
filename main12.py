@@ -86,7 +86,8 @@ def game_score(player_id):  # total score of the game that just ended (rounds si
 
 def reset_player(player_id):  # Reset player data to default
     cur = connection.cursor()
-    cur.execute("update players set money = %s, current_airport = 'EFHK', country = 'Finland', iso_country = 'FI' "
+    cur.execute("update players set money = %s, points = 0, current_airport = 'EFHK', country = 'Finland', "
+                "iso_country = 'FI'"
                 "where id = %s", (START_MONEY, player_id))
     connection.commit()
     cur.close()
@@ -296,6 +297,7 @@ if gamer:
             continue
         print("\n1. play a round")
         print("2. show scores")
+        print("3. reset player")
         print("0. exit")  
         choice = input("Enter your choice: ")
         if choice == "1":
