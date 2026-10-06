@@ -11,11 +11,11 @@ yhteys = mysql.connector.connect(
     collation='utf8mb4_general_ci'
     )
 
-def ask_where():
-    maa = input('Where?: ')
+def kysy_maata():
+    maa = input('Do you know where you are?: ')
     if len(maa) < 1:
         print("No country given. Try again...")
-        maa = ask_where()
+        maa = kysy_maata()
     return maa
 
 def rand_maa():
@@ -25,6 +25,44 @@ def rand_maa():
     kursori.close()
     return value
 
+def info_teksti(nimi):
+    chance = randrange(3)
+    if chance == 0:
+        print(f"You travel through big and small towns in {nimi}.")
+        return
+    if chance == 1:
+        print(f"You look at the great monuments of {nimi}. They are marvelous.")
+        return
+    if chance == 2:
+        print(f"You enjoy the food {nimi} offers.")
+        return
+
+def oikea_vastaus(nimi, raha):
+    chance = randrange(3)
+    if chance == 0:
+        print(f"Correct! You are indeed in {nimi}!")
+        return
+    if chance == 1:
+        print(f"Yes! {nimi} is where you are currently.")
+        return
+    if chance == 2:
+        print(f"Good job! I knew you knew you were in {nimi} the whole time.")
+        return
+    print(f"You receive {raha}€")
+
+def vaara_vastaus(nimi, raha):
+    chance = randrange(3)
+    if chance == 0:
+        print(f"Wrong. You are actually in {nimi}.")
+        return
+    if chance == 1:
+        print(f"Oh dear! {nimi} was the correct answer.")
+        return
+    if chance == 2:
+        print(f"No no, {nimi} is the correct answer.")
+        return
+    print(f"You lose {raha}€")
+
 def satunnainen_tapahtuma():
     print("You have encountered something...")
     valinta = input("Do you take the chance? Y/N: ")
@@ -32,11 +70,11 @@ def satunnainen_tapahtuma():
         chance = randrange(3)
         global rahat
         if chance == 0:
-            print("You have been robbed. You lost all your money")
+            print("You have been robbed. You lost all your money.")
             rahat = 0
             return
         if chance == 1:
-            rand_raha = randrange(20) + 10
+            rand_raha = randrange(40) + 10
             print("You did a good deed. You're rewarded for it.")
             print(f"You receive {rand_raha}€")
             rahat += rand_raha
@@ -83,25 +121,25 @@ arvauskerrat = 0
 kertoja_oikein = 4
 
 arvattava_paikka = rand_maa()
-print(arvattava_paikka)
-print(maan_sekoitus(arvattava_paikka))
-print(maan_sekoitus(arvattava_paikka))
-print(maan_sekoitus(arvattava_paikka))
 
-maa = ask_where()
+info_teksti(maan_sekoitus(arvattava_paikka))
+maa = kysy_maata()
 while rahat > 0:
     if maa.lower() == arvattava_paikka.lower():
-        rahat = min(rahat + 10, 500)
+        saatava_raha = 10
+        oikea_vastaus(arvattava_paikka, saatava_raha)
+        rahat = min(rahat + saatava_raha, 500)
         arvauskerrat += 1
         arvattava_paikka = rand_maa()
-        print(arvattava_paikka)
-        print(":D")
     else:
-        print("D:")
-        rahat -= 30
+        menetettava_raha = 30
+        vaara_vastaus(arvattava_paikka, menetettava_raha)
+        rahat -= menetettava_raha
     levelup()
-    maa = ask_where()
     if randrange(100) + 1 >= 50:
         satunnainen_tapahtuma()
+    info_teksti(maan_sekoitus(arvattava_paikka))
+    maa = kysy_maata()
+
 print()
 print(taso)
