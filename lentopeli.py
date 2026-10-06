@@ -13,19 +13,16 @@ yhteys = mysql.connector.connect(
 rahat = 100
 taso = 0
 
-
 def kysy_maata():
     maa = input('Where?: ')
     if len(maa) < 1:
         print("No country given. Try again...")
         maa = kysy_maata()
-    #kursori.execute(f"select distinct name from country order by rand()")
-    #print(kursori.fetchone()[0])
     return maa
 
 def rand_maa():
     kursori = yhteys.cursor(buffered=True)
-    kursori.execute(f"select distinct name from country order by rand()")
+    kursori.execute("select distinct name from country order by rand() limit 1")
     value = kursori.fetchone()[0]
     kursori.close()
     return value
@@ -38,11 +35,10 @@ maa = kysy_maata()
 while rahat > 0:
     if maa.lower() == arvattava_maa.lower():
         rahat += 10
-        #kursori.close()
         arvattava_maa = rand_maa()
         print(arvattava_maa)
         print(":D")
     else:
         print("D:")
-        rahat -= 20
+        rahat -= 30
     maa = kysy_maata()
