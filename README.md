@@ -458,7 +458,7 @@ You reached Japan! Round score: 118 (spent 1103.40 EUR)
 
 Made by / Tekijät:
 
-- **Inocent**
-- **Akil**
-- **Filmon**
-- **Antto**
+- **Inocent Jep - Dokumentointi ja koodaus**
+- **Akil Abdulrahim - Pelisuunnittelija ja Konseptisuunnittelija**
+- **Filmon Fshatsion - Tietokanta-asiantuntija**
+- **Antto Halme - Konseptisuunnittelija koodaus**
