@@ -243,6 +243,9 @@ def play_round(player_id):
 
     if get_money(player_id) < cheapest_to_country(starts, next_country):
         print(f"You don't have enough money to fly to {next_country}.")
+        print("========================")
+        print("     GAME OVER!")
+        print("========================")
         return "GAME_OVER"
 
     stops = 1 + completed_rounds(player_id)
