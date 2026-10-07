@@ -1,6 +1,6 @@
 #  Flight Game / Lentopeli
 
-**🇬🇧 [English](#-english) | 🇫🇮 [Suomi](#-suomeksi) | 👥 [Credits / Tekijät](#-credits--tekijät)**
+**🇬🇧 [English](#-english) | 🇫🇮 [Suomi](#-suomeksi) | [Credits / Tekijät](#-credits--tekijät)**
 
 ---
 
@@ -227,13 +227,6 @@ You reached Japan! Round score: 118 (spent 1103.40 EUR)
 7. **Challenges and learnings:** SQL distance queries, game-over logic, difficulty scaling
 8. **Future ideas:** password hashing, more game modes, a map view, bonus events
 
-## 10. Known Issues / Improvements
-
-- In the main loop, `play_round()` is called twice when choosing "play a round" (once for the result, once more right after). It should be called once and its result stored.
-- Passwords are stored as plain text. Use hashing (e.g. `bcrypt`) for a real application.
-- Database credentials are hard-coded. Move them to environment variables or a config file.
-- `main12.py` imports `tietokanta_2`, while the file is named `tietokanta.py`.
-
 ---
 
 # 🇫🇮 Suomeksi
@@ -458,13 +451,6 @@ You reached Japan! Round score: 118 (spent 1103.40 EUR)
 6. **Vuokaavio:** miten kierros etenee (kohta 2)
 7. **Haasteet ja oppiminen:** SQL-etäisyyskyselyt, game over -logiikka, vaikeuden kasvu
 8. **Jatkokehitys:** salasanojen hash-suojaus, lisää pelitiloja, karttanäkymä, bonustapahtumat
-
-## 10. Tunnetut ongelmat / parannusehdotukset
-
-- Pääsilmukassa `play_round()` kutsutaan kahdesti, kun valitaan "play a round" (kerran tuloksen tallentamiseen ja heti uudelleen perään). Se pitäisi kutsua vain kerran ja tallentaa tulos.
-- Salasanat tallennetaan selkotekstinä. Oikeassa sovelluksessa tulisi käyttää hashausta (esim. `bcrypt`).
-- Tietokannan tunnukset on kirjoitettu suoraan koodiin. Siirrä ne ympäristömuuttujiin tai asetustiedostoon.
-- `main12.py` tuo `tietokanta_2`-moduulin, vaikka tiedosto on nimeltään `tietokanta.py`.
 
 ---
 
