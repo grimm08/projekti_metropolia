@@ -284,6 +284,7 @@ print("1. Login")
 print("2. Register")
 print("0. Exit")
 
+
 choice = input("Enter your choice: ")
 
 gamer = None
